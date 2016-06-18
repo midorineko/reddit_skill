@@ -1,5 +1,31 @@
+first = [];
+
+exports.handler = function( event, context ) {
+    var final = false;
+
+    var current = event.request.intent.slots.Reddit.value.toLowerCase();
+
+    if(current === 'yes'){
+        final = true;
+    }
+
+    first.push(event.request.intent.slots.Reddit.value.toLowerCase());
+
+    var reddit = "Is this the subreddit you are looking for? "
+
+    reddit += event.request.intent.slots.Reddit.value;
+
+    if(final){
+        event = first[first.length - 2];
+        getReddit(event, context);
+    }else{
+        firstOutput( reddit, context );
+    };
+};
+
 function getReddit(event, context){
-    var reddit = event.request.intent.slots.Reddit.value;
+    first = [];
+    var reddit = event;
 
     var reddit_url = reddit.replace(/\s/g, '');
 
@@ -17,7 +43,7 @@ function getReddit(event, context){
 
             var json = JSON.parse( data );
 
-            var text = "Here are the top 5 " + reddit + " articles! ";
+            var text = "Here are the top 5 articles! ";
 
             for ( var i=0 ; i < 5 ; i++ ) {
                 var title = json.data.children[i].data.title;
@@ -32,10 +58,6 @@ function getReddit(event, context){
         } );
         
     } );
-}
-
-exports.handler = function( event, context ) {
-    getReddit(event, context);
 };
 
 function output( text, context ) {
@@ -51,6 +73,25 @@ function output( text, context ) {
             content: text
         },
         shouldEndSession: true
+    };
+    
+    context.succeed( { response: response } );
+    
+}
+
+function firstOutput( text, context ) {
+
+    var response = {
+        outputSpeech: {
+            type: "PlainText",
+            text: text
+        },
+        card: {
+            type: "Simple",
+            title: "Reddit",
+            content: text
+        },
+        shouldEndSession: false
     };
     
     context.succeed( { response: response } );
