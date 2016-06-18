@@ -1,37 +1,53 @@
-first = [];
+sessionRequests = [];
 
 exports.handler = function( event, context ) {
     var final = false;
 
-    var current = event.request.intent.slots.Reddit.value.toLowerCase();
+    var category = "hot";
 
-    if(current === 'yes'){
+    var current = event.request.intent.slots.Reddit.value.toLowerCase();
+    sessionRequests.push(current);
+
+    if(current === 'yes' || current==='hot'){
         final = true;
+    }else if(current==='top'){
+        final = true;
+        category = 'top';
+    }else if(current==='rising'){
+        final = true;
+        category = 'rising';
+    }else if(current==='new' || current==='recent'){
+        final = true;
+        category = 'new';
+    }else if(current==='controversial'){
+        final = true;
+        category = 'controversial';
+    }else if(current==='gilded'){
+        final = true;
+        category = 'gilded';
     }
 
-    first.push(event.request.intent.slots.Reddit.value.toLowerCase());
-
-    var reddit = "Is this the subreddit you are looking for? "
-
-    reddit += event.request.intent.slots.Reddit.value;
-
     if(final){
-        event = first[first.length - 2];
-        getReddit(event, context);
+        event = sessionRequests[sessionRequests.length - 2];
+        getReddit(event, context, category);
     }else{
-        firstOutput( reddit, context );
+        var reddit = "Was that? "
+        reddit += current;
+        sessionRequestsOutput( reddit, context );
     };
 };
 
-function getReddit(event, context){
-    first = [];
+function getReddit(event, context, category){
+    sessionRequests = [];
     var reddit = event;
 
     var reddit_url = reddit.replace(/\s/g, '');
 
+    var url = null;
+
     var http = require( 'http' );
- 
-    var url = "http://www.reddit.com/r/" + reddit_url + ".json";
+
+    url = "http://www.reddit.com/r/" + reddit_url + "/" + category + ".json";
 
     http.get( url, function( response ) {
         
@@ -43,7 +59,7 @@ function getReddit(event, context){
 
             var json = JSON.parse( data );
 
-            var text = "Here are the top 5 articles! ";
+            var text = "Here are the first 5 "+ category +" articles! ";
 
             for ( var i=0 ; i < 5 ; i++ ) {
                 var title = json.data.children[i].data.title;
@@ -79,7 +95,7 @@ function output( text, context ) {
     
 }
 
-function firstOutput( text, context ) {
+function sessionRequestsOutput( text, context ) {
 
     var response = {
         outputSpeech: {
