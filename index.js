@@ -38,29 +38,21 @@ exports.handler = function( event, context ) {
 };
 
 function getReddit(event, context, category){
+
+var outout = require('./outout');
+
     sessionRequests = [];
     var reddit = event;
-
     var reddit_url = reddit.replace(/\s/g, '');
-
     var url = null;
-
     var http = require( 'http' );
-
     url = "http://www.reddit.com/r/" + reddit_url + "/" + category + ".json";
-
     http.get( url, function( response ) {
-        
         var data = '';
-        
         response.on( 'data', function( x ) { data += x; } );
-
         response.on( 'end', function() {
-
             var json = JSON.parse( data );
-
             var text = "Here are the first 5 "+ category +" articles! ";
-
             for ( var i=0 ; i < 5 ; i++ ) {
                 var title = json.data.children[i].data.title;
                 if ( title ) {
@@ -68,16 +60,13 @@ function getReddit(event, context, category){
                     text += b + ", " + title + ". ";
                 }
             }
-        
-            output( text, context );
-        
+            output( outout.valz(), context );
         } );
         
     } );
 };
 
 function output( text, context ) {
-
     var response = {
         outputSpeech: {
             type: "PlainText",
@@ -90,13 +79,10 @@ function output( text, context ) {
         },
         shouldEndSession: true
     };
-    
     context.succeed( { response: response } );
-    
-}
+};
 
 function sessionRequestsOutput( text, context ) {
-
     var response = {
         outputSpeech: {
             type: "PlainText",
@@ -109,7 +95,5 @@ function sessionRequestsOutput( text, context ) {
         },
         shouldEndSession: false
     };
-    
     context.succeed( { response: response } );
-    
-}
+};
