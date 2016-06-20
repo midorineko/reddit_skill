@@ -1,15 +1,17 @@
-sessionRequests = [];
+var outout = require('./outout');
+var sessionRequests = [];
 
 exports.handler = function( event, context ) {
     var final = false;
-
-    var category = "hot";
-
+    var category = "";
+    sessionRequests.push(event);
     var current = event.request.intent.slots.Reddit.value.toLowerCase();
-    sessionRequests.push(current);
+    var speechTxt = "Was that? "
+    speechTxt += current;
 
     if(current === 'yes' || current==='hot'){
         final = true;
+        category = "hot";
     }else if(current==='top'){
         final = true;
         category = 'top';
@@ -31,28 +33,23 @@ exports.handler = function( event, context ) {
         event = sessionRequests[sessionRequests.length - 2];
         getReddit(event, context, category);
     }else{
-        var reddit = "Was that? "
-        reddit += current;
-        sessionRequestsOutput( reddit, context );
+        outout.output(speechTxt, context, false);
     };
 };
 
 function getReddit(event, context, category){
-
-var outout = require('./outout');
-
     sessionRequests = [];
-    var reddit = event;
+    var reddit = event.request.intent.slots.Reddit.value.toLowerCase();
     var reddit_url = reddit.replace(/\s/g, '');
     var url = null;
-    var http = require( 'http' );
-    url = "http://www.reddit.com/r/" + reddit_url + "/" + category + ".json";
-    http.get( url, function( response ) {
+    var https = require( 'https' );
+    url = "https://www.reddit.com/r/" + reddit_url +"/" + category + ".json?limit=5";
+    https.get( url, function( response ) {
         var data = '';
         response.on( 'data', function( x ) { data += x; } );
         response.on( 'end', function() {
             var json = JSON.parse( data );
-            var text = "Here are the first 5 "+ category +" articles! ";
+            var text = "Here are the first 5 " + category + " " + reddit +" articles! ";
             for ( var i=0 ; i < 5 ; i++ ) {
                 var title = json.data.children[i].data.title;
                 if ( title ) {
@@ -60,40 +57,8 @@ var outout = require('./outout');
                     text += b + ", " + title + ". ";
                 }
             }
-            output( outout.valz(), context );
+            outout.output(text, context, true);
         } );
         
     } );
-};
-
-function output( text, context ) {
-    var response = {
-        outputSpeech: {
-            type: "PlainText",
-            text: text
-        },
-        card: {
-            type: "Simple",
-            title: "Reddit",
-            content: text
-        },
-        shouldEndSession: true
-    };
-    context.succeed( { response: response } );
-};
-
-function sessionRequestsOutput( text, context ) {
-    var response = {
-        outputSpeech: {
-            type: "PlainText",
-            text: text
-        },
-        card: {
-            type: "Simple",
-            title: "Reddit",
-            content: text
-        },
-        shouldEndSession: false
-    };
-    context.succeed( { response: response } );
 };
