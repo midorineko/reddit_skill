@@ -1,4 +1,5 @@
 var outout = require('./outout');
+var speech_out = require('./speech_out');
 var sessionRequests = [];
 
 exports.handler = function( event, context ) {
@@ -7,27 +8,14 @@ exports.handler = function( event, context ) {
     sessionRequests.push(event);
     var current = event.request.intent.slots.Reddit.value.toLowerCase();
     var speechTxt = "Was that? "
-    speechTxt += current;
 
-    if(current === 'yes' || current==='hot'){
-        final = true;
-        category = "hot";
-    }else if(current==='top'){
-        final = true;
-        category = 'top';
-    }else if(current==='rising'){
-        final = true;
-        category = 'rising';
-    }else if(current==='new' || current==='recent'){
-        final = true;
-        category = 'new';
-    }else if(current==='controversial'){
-        final = true;
-        category = 'controversial';
-    }else if(current==='gilded'){
-        final = true;
-        category = 'gilded';
-    }
+    speech_return = speech_out.speech(current);
+
+    final = speech_return[0];
+    category = speech_return[1];
+    current = speech_return[2];
+
+    speechTxt += current;
 
     if(final){
         event = sessionRequests[sessionRequests.length - 2];
