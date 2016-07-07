@@ -2,7 +2,7 @@
 
 ### How to enable the skill:
 
- * For now you have to dwonload the zip folder in this repo
+ * For now you have to download the zip folder in this repo
  * Upload it as an AWS lambda in Node format and make it available as a Skill
  * Build a skill and reference it in your developer portal. 
 
