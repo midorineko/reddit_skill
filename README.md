@@ -33,7 +33,7 @@ Soon this skill will be available for download.
 
 Homophones are a real pain. I will be making another .js file which will hold specific names for more difficult sub routes. It would be great if some people helped me build a complete list for the more difficult subs. 
 
-An Exmaple: Defense of the Ancients -> Dota2
+An Example: Defense of the Ancients -> Dota2
 
 
 
