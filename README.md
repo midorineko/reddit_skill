@@ -2,7 +2,7 @@
 
 ### How to enable the skill:
 
- * For now you have to dwonload the zip folder in this repo
+ * For now you have to download the zip folder in this repo
  * Upload it as an AWS lambda in Node format and make it available as a Skill
  * Build a skill and reference it in your developer portal. 
 
@@ -33,7 +33,7 @@ Soon this skill will be available for download.
 
 Homophones are a real pain. I will be making another .js file which will hold specific names for more difficult sub routes. It would be great if some people helped me build a complete list for the more difficult subs. 
 
-An Exmaple: Defense of the Ancients -> Dota2
+An Example: Defense of the Ancients -> Dota2
 
 
 
